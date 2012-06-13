@@ -62,6 +62,6 @@ fi
 #git aliases doesn't support changing environment variables, so we need this alias
 alias homeconfig="git --git-dir=$HOME/.homeconfig.git --work-tree=$HOME "
 #hijack completion from git command
-eval "$(complete -p git | sed 's/git$/homeconfig/')"
+$(complete -p git | sed 's/git$/homeconfig/')
 
 #unset IS_COLOR
