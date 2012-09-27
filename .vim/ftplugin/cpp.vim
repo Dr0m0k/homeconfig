@@ -1,0 +1,1 @@
+/home/TOROKI-WIND/ivan.goncharov/.vim/ftplugin/c.vim
