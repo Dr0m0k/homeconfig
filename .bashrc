@@ -28,15 +28,24 @@ shopt -s checkwinsize
 #Does terminal support color?
 unset IS_COLOR
 if [ -n "$(which tput)" -a "$(tput colors)" -gt 0 ]; then
-    IS_COLOR=
+    IS_COLOR=y
     . ~/.etc/bash/bash_colors
 fi
 
-if [ -v IS_COLOR ]; then
-    PS1='\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
-else
-    PS1='\u@\h:\w\$ '
-fi
+HOST_FMT=
+[ -n "$SSH_TTY" ] && HOST_FMT='@\h'
+
+UP_LVL=
+[ $SHLVL -gt 1 ] && UP_LVL="($(ps -p $PPID -o comm --no-headers))"
+#TODO: Move all colors to def
+#HAPPY="$Cyan:)$Color_Off"
+HAPPY="\[\033[01;36m\]:)\[\033[00m\]"
+#SAD="$On_Purple:($Color_Off"
+SAD="\[\033[01;35m\]:(\[\033[00m\]"
+SMILEY="(((\$?)) && echo -ne '$SAD') || echo -ne '$HAPPY'"
+unset HAPPY SAD
+PS1="\[\033[01;32m\]\u$UP_LVL$HOST_FMT\[\033[00m\]\$($SMILEY)\[\033[01;34m\]\W\[\033[00m\]\$ "
+unset HOST_FMT UP_LVL SMILEY
 
 # If this is an xterm set the title to user@host:dir
 case "$TERM" in
@@ -48,20 +57,32 @@ xterm*|rxvt*)
 esac
 
 # enable color support for utils and also add handy aliases
-if [ -v IS_COLOR ]; then
-    [ -n $(which dircolors) ] && eval "$(dircolors -b)"
-    alias ls='ls --color=auto'
+if [ -n "$IS_COLOR" ]; then
+    alias ls='ls --color=auto' #ls use dircolors by default
     alias grep='grep --color=auto'
+    alias fgrep='fgrep --color=auto'
+    alias egrep='egrep --color=auto'
 fi
 
 # enable programmable completion features (you don't need to enable
 if [ -f /etc/bash_completion ]; then
     . /etc/bash_completion
 fi
-
+alias cscope='cscope -kqUR'
 #git aliases doesn't support changing environment variables, so we need this alias
 alias homeconfig="git --git-dir=$HOME/.homeconfig.git --work-tree=$HOME "
 #hijack completion from git command
 $(complete -p git | sed 's/git$/homeconfig/')
 
-#unset IS_COLOR
+#git aliases doesn't support changing environment variables, so we need this alias
+alias homeconfig="git --git-dir=$HOME/.homeconfig.git --work-tree=$HOME"
+#hijack completion from git command
+HOMECONFIG_COMP=$(complete -p git)
+if [ -n "$HOMECONFIG_COMP" ]; then
+    eval "$(echo $HOMECONFIG_COMP | sed 's/git$/homeconfig/')"
+fi
+unset HOMECONFIG_COMP
+
+alias cscope='cscope -kqUR'
+ 
+unset IS_COLOR
