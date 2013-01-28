@@ -69,6 +69,9 @@ set lazyredraw
 " Switches on syntax highlighting.
 syntax enable
 
+" Autoload Doxygen highlighting
+let g:load_doxygen_syntax=1
+
 """"" File type detection
 
 " Enable file type detection
