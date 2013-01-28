@@ -84,5 +84,8 @@ fi
 unset HOMECONFIG_COMP
 
 alias cscope='cscope -kqUR'
- 
+
+source ~/.etc/bash/bash_tricks.sh
+
 unset IS_COLOR
+
