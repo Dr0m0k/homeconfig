@@ -47,6 +47,15 @@ unset HAPPY SAD
 PS1="\[\033[01;32m\]\u$UP_LVL$HOST_FMT\[\033[00m\]\$($SMILEY)\[\033[01;34m\]\W\[\033[00m\]\$ "
 unset HOST_FMT UP_LVL SMILEY
 
+# get cursor position and add new line if we're not in first column
+function prompt_command {
+	echo -en "\033[6n" && read -sdR CURPOS
+	if [[ ${CURPOS##*;} -gt 1 ]]; then
+		echo -e "\033[01;35m↵\033[00m"
+	fi
+}
+PROMPT_COMMAND=prompt_command
+
 # If this is an xterm set the title to user@host:dir
 case "$TERM" in
 xterm*|rxvt*)
